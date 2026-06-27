@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Cookie Toggle",
+  "description": "Toggle a cookie between enabled/disabled values, create or delete cookies, and inspect current state.",
+  "version": "1.0",
+  "permissions": ["cookies", "storage", "tabs", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icon-gray.png",
+    "48": "icon-gray.png",
+    "128": "icon-gray.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Cookie Toggle",
+    "default_icon": {
+      "16": "icon-gray.png",
+      "48": "icon-gray.png",
+      "128": "icon-gray.png"
+    }
+  }
+}
