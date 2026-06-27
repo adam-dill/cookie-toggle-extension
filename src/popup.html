@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Toggle</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Cookie Toggle</h1>
+    </header>
+
+    <section class="toggle-section">
+      <button id="toggleButton" class="toggle-button" type="button">Toggle</button>
+      <div id="toggleStatus" class="toggle-status">Loading...</div>
+    </section>
+
+    <section class="manage-accordion">
+      <details id="manageDetails">
+        <summary>Manage</summary>
+        <div class="manage-panel">
+          <div class="manage-actions">
+            <button id="addCookieButton" class="primary" type="button">Add Cookie</button>
+            <button id="saveConfigButton" type="button">Save</button>
+          </div>
+          <div id="configList" class="config-list"></div>
+        </div>
+      </details>
+    </section>
+
+    <div id="message" class="message"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
