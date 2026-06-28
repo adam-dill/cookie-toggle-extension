@@ -72,7 +72,7 @@ function createCookieConfigRow(config = {}, index = 0) {
       </div>
     </div>
     <div class="cookie-config-grid">
-      <div>
+      <div class="disabled-value-group" ${config.deleteOnDisable ? 'hidden' : ''}>
         <label class="small-label">Disabled Value</label>
         <input type="text" name="disabled" value="${config.disabled || ''}" placeholder="disabled value" />
       </div>
@@ -85,6 +85,10 @@ function createCookieConfigRow(config = {}, index = 0) {
       <button type="button" class="danger removeButton">Remove</button>
     </div>
   `;
+
+  const disableValueGroup = row.querySelector('.disabled-value-group');
+  const disabledValueInput = row.querySelector('input[name="disabled"]');
+  const deleteOnDisableInput = row.querySelector('input[name="deleteOnDisable"]');
 
   const inputs = row.querySelectorAll('input');
   inputs.forEach(input => {
@@ -108,6 +112,36 @@ function createCookieConfigRow(config = {}, index = 0) {
       configs[rowIndex] = currentConfig;
       markConfigsDirty();
     });
+  });
+
+  deleteOnDisableInput.addEventListener('change', () => {
+    const rowIndex = Number(row.dataset.index);
+    const currentConfig = configs[rowIndex] || { name: '', enabled: '', disabled: '', deleteOnDisable: false };
+
+    if (deleteOnDisableInput.checked) {
+      row.dataset.disabledValueBackup = currentConfig.disabled || '';
+      currentConfig.disabled = '';
+      currentConfig.deleteOnDisable = true;
+      if (disabledValueInput) {
+        disabledValueInput.value = '';
+      }
+      if (disableValueGroup) {
+        disableValueGroup.hidden = true;
+      }
+    } else {
+      const restoredValue = row.dataset.disabledValueBackup || currentConfig.disabled || '';
+      currentConfig.disabled = restoredValue;
+      currentConfig.deleteOnDisable = false;
+      if (disabledValueInput) {
+        disabledValueInput.value = restoredValue;
+      }
+      if (disableValueGroup) {
+        disableValueGroup.hidden = false;
+      }
+    }
+
+    configs[rowIndex] = currentConfig;
+    markConfigsDirty();
   });
 
   row.querySelector('.removeButton').addEventListener('click', () => {
