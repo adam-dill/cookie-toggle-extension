@@ -9,6 +9,7 @@ const messageEl = document.getElementById('message');
 const STORAGE_KEY_CONFIGS = 'cookieToggle_cookieConfigs';
 let currentTabUrl = null;
 let configs = [];
+let savedConfigs = [];
 let messageTimeoutId = null;
 
 function setMessage(text, isError = false) {
@@ -30,6 +31,20 @@ function getStorage(keys) {
 
 function setStorage(items) {
   return new Promise(resolve => chrome.storage.local.set(items, resolve));
+}
+
+function updateSaveButtonState() {
+  const hasChanges = JSON.stringify(configs) !== JSON.stringify(savedConfigs);
+  saveConfigButton.disabled = !hasChanges;
+}
+
+function markConfigsDirty() {
+  updateSaveButtonState();
+}
+
+function markConfigsSaved() {
+  savedConfigs = JSON.parse(JSON.stringify(configs));
+  updateSaveButtonState();
 }
 
 async function queryCurrentTabUrl() {
@@ -81,7 +96,7 @@ function createCookieConfigRow(config = {}, index = 0) {
       if (input.name === 'disabled') currentConfig.disabled = input.value;
       if (input.name === 'deleteOnDisable') currentConfig.deleteOnDisable = input.checked;
       configs[rowIndex] = currentConfig;
-      saveConfigs({ rerender: false }).catch(error => setMessage(error.message, true));
+      markConfigsDirty();
     });
     input.addEventListener('change', () => {
       const rowIndex = Number(row.dataset.index);
@@ -91,14 +106,15 @@ function createCookieConfigRow(config = {}, index = 0) {
       if (input.name === 'disabled') currentConfig.disabled = input.value;
       if (input.name === 'deleteOnDisable') currentConfig.deleteOnDisable = input.checked;
       configs[rowIndex] = currentConfig;
-      saveConfigs({ rerender: false }).catch(error => setMessage(error.message, true));
+      markConfigsDirty();
     });
   });
 
   row.querySelector('.removeButton').addEventListener('click', () => {
     const idx = Number(row.dataset.index);
     configs.splice(idx, 1);
-    saveConfigs({ rerender: true }).catch(error => setMessage(error.message, true));
+    markConfigsDirty();
+    renderConfigRows();
   });
 
   return row;
@@ -126,12 +142,15 @@ async function saveConfigs({ rerender = true } = {}) {
   if (rerender) {
     renderConfigRows();
   }
+  markConfigsSaved();
 }
 
 async function loadConfigs() {
   const stored = await getStorage(STORAGE_KEY_CONFIGS);
   configs = stored[STORAGE_KEY_CONFIGS] || [];
+  savedConfigs = JSON.parse(JSON.stringify(configs));
   renderConfigRows();
+  updateSaveButtonState();
 }
 
 function isSecureUrl() {
@@ -252,6 +271,7 @@ function wireEvents() {
 
   addCookieButton.addEventListener('click', () => {
     configs.push({ name: '', enabled: '', disabled: '', deleteOnDisable: false });
+    markConfigsDirty();
     renderConfigRows();
   });
 
@@ -272,6 +292,7 @@ async function init() {
     currentTabUrl = await queryCurrentTabUrl();
     await loadConfigs();
     wireEvents();
+    updateSaveButtonState();
     await refreshState();
   } catch (error) {
     setActionState(false, 'Unable to read site');
