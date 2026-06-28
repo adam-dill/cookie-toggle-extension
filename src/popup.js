@@ -76,10 +76,10 @@ function createCookieConfigRow(config = {}, index = 0) {
         <label class="small-label">Disabled Value</label>
         <input type="text" name="disabled" value="${config.disabled || ''}" placeholder="disabled value" />
       </div>
-      <div class="checkbox-row">
+      <label class="checkbox-row" for="delete_${index}">
         <input id="delete_${index}" type="checkbox" name="deleteOnDisable" ${config.deleteOnDisable ? 'checked' : ''} />
-        <label for="delete_${index}">Delete on Disable</label>
-      </div>
+        <span>Delete on Disable</span>
+      </label>
     </div>
     <div class="row-actions">
       <button type="button" class="danger removeButton">Remove</button>

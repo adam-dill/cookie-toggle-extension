@@ -133,10 +133,17 @@ header p {
 }
 
 .checkbox-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
   font-size: 0.9rem;
+  padding: 4px 0;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.checkbox-row input {
+  margin: 0;
 }
 
 .cookie-config-row .row-actions {
