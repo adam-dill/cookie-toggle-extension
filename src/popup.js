@@ -21,7 +21,7 @@ function setMessage(text, isError = false) {
   messageTimeoutId = window.setTimeout(() => {
     messageEl.style.opacity = '0';
     messageEl.style.visibility = 'hidden';
-  }, 2200);
+  }, 3000);
 }
 
 function getStorage(keys) {
@@ -139,13 +139,20 @@ function isSecureUrl() {
 }
 
 async function setCookieValue(name, value) {
+  const date = new Date();
+  // Add 400 days (max allowed) to the current date 
+  date.setDate(date.getDate() + 400);
+  // Convert to UNIX epoch in seconds
+  const expirationInSeconds = Math.floor(date.getTime() / 1000);
+
   await chrome.cookies.set({
     url: currentTabUrl,
     name,
     value,
     path: '/',
     secure: isSecureUrl(),
-    sameSite: 'lax'
+    sameSite: 'lax',
+    expirationDate: expirationInSeconds
   });
 }
 
